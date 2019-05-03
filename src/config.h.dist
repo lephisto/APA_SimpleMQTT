@@ -1,0 +1,55 @@
+const uint8_t DotClockPin = 18;             //CL Pin
+const uint8_t DotDataPin = 23;              //Data Pin
+const uint16_t PixelCount = 144;            //Number of Pixels
+const uint8_t AnimationChannels = 3;        //Number of Animation Channels
+
+#define MQTT_SERVER   "mqtt.server"         // Hostname of MQTT Server
+#define MQTT_USER     "mqtt.user"           // MQTT Username
+#define MQTT_PASSWORD "mqtt.password"       // MQTT Password
+
+#define MQTT_BASE_TOPIC "led/"              // MQTT Path is like MQTT_BASE_TOPIC/deviceid
+#define MQTT_CONF_TOPIC "ledconfig/"        // MQTT Path is like MQTT_CONF_OUTPUT/deviceid
+
+// Wifi mode
+#define WIFI_MODE     "ENT"                 // ENT=WPA2 Enterprise WPA=WPA2 PSK
+#define WIFI_SSID     "<WIFISSID>"          // your ssid
+
+// If WPA Mode
+#define WIFI_PASSWORD "<WPAPASSWORD>"       // WPA2 PSK
+
+// Only required, if WPA2 Enterprise Mode
+#define EAP_ID        "<ENTEAPID>"          // EAP Device ID
+#define EAP_USERNAME  "<ENTUSERNAME>"       // EAP Username
+#define EAP_PASSWORD  "<ENTPASSWORD>"       // EAP Password
+
+                                            // Your EAP CA Ceritificate
+const char* wpa_root_ca= \
+"-----BEGIN CERTIFICATE-----\n" \
+"MIIEtTCCA52gAwIBAgIBADANBgkqhkiG9w0BAQsFADCBmDELMAkGA1UEBhMCREUx\n" \
+"EDAOBgNVBAgTB0JBVkFSSUExEzARBgNVBAcTClJlZ2Vuc2J1cmcxFDASBgNVBAoT\n" \
+"C05ldHpDT05TVUxUMSEwHwYJKoZIhvcNAQkBFhJtZXBoaXN0b0BtZXBoaXMudG8x\n" \
+"EDAOBgNVBAMTB3dsYW4tY2ExFzAVBgNVBAsTDldQQSBFbnRlcnByaXNlMB4XDTE4\n" \
+"MDcwMzIxMDkxMloXDTI4MDYzMDIxMDkxMlowgZgxCzAJBgNVBAYTAkRFMRAwDgYD\n" \
+"VQQIEwdCQVZBUklBMRMwEQYDVQQHEwpSZWdlbnNidXJnMRQwEgYDVQQKEwtOZXR6\n" \
+"Q09OU1VMVDEhMB8GCSqGSIb3DQEJARYSbWVwaGlzdG9AbWVwaGlzLnRvMRAwDgYD\n" \
+"VQQDEwd3bGFuLWNhMRcwFQYDVQQLEw5XUEEgRW50ZXJwcmlzZTCCASIwDQYJKoZI\n" \
+"hvcNAQEBBQADggEPADCCAQoCggEBAMJQgpPr81+ryyVMrxokM7zUtccSgAS0xtwK\n" \
+"ImU3VzhN5EcbAVg3BGwoMmcOu5gSCKblUp/CQYE12WaeCBzRTponMVosnlov7Pel\n" \
+"ozxPlknpApA+4XMoumqIUC6VEmqUy5iCxkiqLnmV3XF2u9KVVsCgzJrIKmAAuLQH\n" \
+"mUJdp0cSt+oT1q0r9X/7loL49gg9zcIpEfgI0g5/RUfo5F9yLjfSjoX6sRrhB7IK\n" \
+"wqCfvtdQwnovcuHmCnERkN1tG3PyKHXnK6M+IoqjBioK4exx6oGMr+dM1sFLASkr\n" \
+"OhWdszHzFpp/dOmyhEv2k8xmiGchrejLQ1ZTkAzUDnOKfwkIMnsCAwEAAaOCAQYw\n" \
+"ggECMB0GA1UdDgQWBBQbcj8yO/VdjmzAvDmmDsl6cYNf7jCBxQYDVR0jBIG9MIG6\n" \
+"gBQbcj8yO/VdjmzAvDmmDsl6cYNf7qGBnqSBmzCBmDELMAkGA1UEBhMCREUxEDAO\n" \
+"BgNVBAgTB0JBVkFSSUExEzARBgNVBAcTClJlZ2Vuc2J1cmcxFDASBgNVBAoTC05l\n" \
+"dHpDT05TVUxUMSEwHwYJKoZIhvcNAQkBFhJtZXBoaXN0b0BtZXBoaXMudG8xEDAO\n" \
+"BgNVBAMTB3dsYW4tY2ExFzAVBgNVBAsTDldQQSBFbnRlcnByaXNlggEAMAwGA1Ud\n" \
+"EwQFMAMBAf8wCwYDVR0PBAQDAgEGMA0GCSqGSIb3DQEBCwUAA4IBAQAH2tHeEYdZ\n" \
+"xVe8odsncoE99wdWnx3qYKepqjf6y88rBQwgIqfxTdBeVIbJoU9EykWIaBCAQj1K\n" \
+"HdIwsUNSGojhsw7CY0SHpYJzHIKwrno+BHdiD8T4e6pKafhAhOvoUn9SoksbhvKu\n" \
+"qB4+fk9OT/dW29ouK9q1aUUXGluSWb6+XYX/WvP/HG0xZ1mxUQV2ReZWE0jtiaDm\n" \
+"1ScWgfx+xHhlspa/PR4fiOr9hjh4tPHRd5xjaDeENklFLFLmlwKyUhneGGZD/7IB\n" \
+"22f8DxMPfDWK8cN/vHjXXvGNl+LIjEhY0bK3tp4ZZ/zIw+h+PZHTF6s7f4nsxT4f\n" \
+"gB/3ONGae8aM\n" \
+"-----END CERTIFICATE-----\n";
+
