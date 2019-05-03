@@ -13,7 +13,7 @@
 
 #include "config.h"
 
-#define colorSaturation 128
+#define colorSaturation 255
 
 // PubSub MQTT Client
 WiFiClient client;
@@ -428,7 +428,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
             Serial.println("MQTT: Fade to: " + String(r) + "," + String(g) + "," + String(b));
             fadeToColor = true;
             CurrentStripColor=RgbColor(r,g,b);
-            FadeTo (0.2f,RgbColor(r,g,b),4000);
+            FadeTo (0.2f,RgbColor(r,g,b),TransitionTime);
             animations.StopAnimation(1);
             animations.StopAnimation(2);
             Serial.println("Current Brightness" + String(strip.GetBrightness()));
@@ -444,7 +444,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
         Serial.println("MQTT: Fade to: " + String(r) + "," + String(g) + "," + String(b));
         fadeToColor = true;
         CurrentStripColor=RgbColor(r,g,b);
-        FadeTo (0.2f,RgbColor(r,g,b),4000);
+        FadeTo (0.2f,RgbColor(r,g,b),TransitionTime);
         animations.StopAnimation(1);
         animations.StopAnimation(2);
         Serial.println("Current Brightness" + String(strip.GetBrightness()));
@@ -454,13 +454,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     if (strcmp(topic,String("led/" + deviceid + "/on").c_str())==0) {
         Serial.println("On called");
         fadeToColor = true;
-        FadeTo (0.2f,CurrentStripColor,4000);
+        FadeTo (0.2f,CurrentStripColor,TransitionTime);
         strip.Show();
     }
     if (strcmp(topic,String("led/" + deviceid + "/off").c_str())==0) {
         Serial.println("Off called");
         fadeToColor = true;
-        FadeTo(0.0f,black,4000);
+        FadeTo(0.0f,black,TransitionTime);
         animations.StopAnimation(1);
         animations.StopAnimation(2);
     }
@@ -468,16 +468,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
         Serial.println("Set Brightness called");
         strip.SetBrightness(sPayload.toInt());
         fadeToColor = true;
-        FadeTo (0.2f,CurrentStripColor,4000);
+        FadeTo (0.2f,CurrentStripColor,TransitionTime);
 
         strip.Show();
     }
     if (strcmp(topic,String("led/" + deviceid + "/cylone").c_str())==0) {
         Serial.println("Cylone called");
         animations.StartAnimation(1, 5, FadeAnimUpdate);
-        animations.StartAnimation(2, 2000, MoveAnimUpdate);
+        animations.StartAnimation(2, TransitionTime, MoveAnimUpdate);
     }
     if (strcmp(topic,String("led/" + deviceid + "/update").c_str())==0) {
+        animations.StartAnimation(1, 5, FadeAnimUpdate);
         Serial.println("Update requested called");
         update(sPayload, 80);
     }
@@ -537,7 +538,7 @@ void setup()
     Serial.println();
     Serial.println("Running...");
 
-    FadeTo(0.2f,white,4000);
+    FadeTo(0.2f,white,TransitionTime);
 }
 
 

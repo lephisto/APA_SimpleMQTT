@@ -2,6 +2,8 @@ const uint8_t DotClockPin = 18;             //CL Pin
 const uint8_t DotDataPin = 23;              //Data Pin
 const uint16_t PixelCount = 144;            //Number of Pixels
 const uint8_t AnimationChannels = 3;        //Number of Animation Channels
+const uint16_t TransitionTime = 2000;       //Time for fading to new Color
+
 
 #define MQTT_SERVER   "mqtt.server"         // Hostname of MQTT Server
 #define MQTT_USER     "mqtt.user"           // MQTT Username
