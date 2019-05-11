@@ -4,3 +4,6 @@
 .vscode
 src/config.h
 test
+.clang_complete
+.gcc-flags.json
+
