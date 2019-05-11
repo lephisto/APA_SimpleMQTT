@@ -23,9 +23,12 @@ int contentLength = 0;
 bool isValidContentType = false;
 String deviceid;
 
+//EEprom Positions
+int eepromPosLedcount = 0;
+
 // for software bit bang
 //NeoPixelBus<DotStarBgrFeature, DotStarMethod> strip(PixelCount, DotClockPin, DotDataPin);
-NeoPixelBrightnessBus<DotStarBgrFeature, DotStarMethod> strip(PixelCount, DotClockPin, DotDataPin);
+NeoPixelBrightnessBus<DotStarBgrFeature, DotStarMethod> strip(maxPixelCount, DotClockPin, DotDataPin);
 
 // for hardware SPI (best performance but must use hardware pins)
 //NeoPixelBus<DotStarBgrFeature, DotStarSpiMethod> strip(PixelCount);
@@ -455,6 +458,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
         Serial.println("On called");
         fadeToColor = true;
         FadeTo (0.2f,CurrentStripColor,TransitionTime);
+        animations.StopAnimation(1);
+        animations.StopAnimation(2);
         strip.Show();
     }
     if (strcmp(topic,String("led/" + deviceid + "/off").c_str())==0) {
@@ -476,6 +481,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
         Serial.println("Cylone called");
         animations.StartAnimation(1, 5, FadeAnimUpdate);
         animations.StartAnimation(2, TransitionTime, MoveAnimUpdate);
+    }
+    if (strcmp(topic,String("led/" + deviceid + "/config/ledcount").c_str())==0) {
+        Serial.println("Config LED Count");
+        PixelCount = sPayload.toInt();
+        EEPROM.writeInt(eepromPosLedcount,sPayload.toInt());
+        EEPROM.commit();
     }
     if (strcmp(topic,String("led/" + deviceid + "/update").c_str())==0) {
         animations.StartAnimation(1, 5, FadeAnimUpdate);
@@ -516,6 +527,16 @@ void setup()
 {
     Serial.begin(115200);
     while (!Serial); // wait for serial attach
+
+    Serial.println("\nTesting EEPROM Library\n");
+    if (!EEPROM.begin(128)) {
+        Serial.println("Failed to initialise EEPROM");
+        Serial.println("Restarting...");
+        delay(1000);
+        ESP.restart();
+    }
+
+    PixelCount = EEPROM.readInt(eepromPosLedcount);
 
     setupWiFi();
     yield();
