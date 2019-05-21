@@ -482,7 +482,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
         animations.StartAnimation(1, 5, FadeAnimUpdate);
         animations.StartAnimation(2, TransitionTime, MoveAnimUpdate);
     }
-    if (strcmp(topic,String("led/" + deviceid + "/config/ledcount").c_str())==0) {
+    if (strcmp(topic,String("led/" + deviceid + "/config/pixelcount").c_str())==0) {
         Serial.println("Config LED Count");
         PixelCount = sPayload.toInt();
         EEPROM.writeInt(eepromPosLedcount,sPayload.toInt());
@@ -504,7 +504,7 @@ void reconnectmqtt() {
     Serial.print("'....");
     String clientId = "iot-";
     clientId += deviceid;
-    if (mqttclient.connect(clientId.c_str())) {
+    if (mqttclient.connect(clientId.c_str(),MQTT_USER,MQTT_PASSWORD,String("led/" + deviceid + "/state").c_str(),0,false,"disconnected")) {
       Serial.println("connected");
       // subscripe to commands
       mqttclient.subscribe(String("led/" + deviceid + "/on").c_str());       //decimal colors eg. 255,0,0 R,G,B
@@ -514,6 +514,9 @@ void reconnectmqtt() {
       mqttclient.subscribe(String("led/" + deviceid + "/brightness").c_str());  
       mqttclient.subscribe(String("led/" + deviceid + "/cylone").c_str());
       mqttclient.subscribe(String("led/" + deviceid + "/update").c_str());
+      mqttclient.subscribe(String("led/" + deviceid + "/config/pixelcount").c_str());
+      mqttclient.publish(String("led/" + deviceid + "/state").c_str(), "connected");
+
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqttclient.state());
@@ -537,6 +540,7 @@ void setup()
     }
 
     PixelCount = EEPROM.readInt(eepromPosLedcount);
+    Serial.println("Configured for " + String(PixelCount) + " Pixels");
 
     setupWiFi();
     yield();
@@ -546,6 +550,8 @@ void setup()
     mqttclient.setServer(MQTT_SERVER,1883);
     mqttclient.setClient(client);
     mqttclient.setCallback(callback);
+
+    Serial.println(String("led/" + deviceid + "/state"));
 
     Serial.println();
     Serial.println("Initializing...");
@@ -576,7 +582,7 @@ void changeColor(RgbColor cl) {
 
 void loop() {
     if (!mqttclient.connected()) {
-        //Serial.println("Connecting MQTT");
+        Serial.println("Connecting MQTT");
         reconnectmqtt();
     }
 
